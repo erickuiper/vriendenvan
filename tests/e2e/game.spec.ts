@@ -32,15 +32,23 @@ test.describe('Vriendjes van Getallen', () => {
       const enabledCards = page.locator(cardSelector)
       const count = await enabledCards.count()
       if (count < 2) break
-      const firstIdx = round % count
-      let secondIdx = (round + 1) % count
-      if (secondIdx === firstIdx) secondIdx = (secondIdx + 1) % count
+      const pairCount = (count * (count - 1)) / 2
+      const pairIndex = round % pairCount
+      let k = 0
+      let remaining = pairIndex
+      while (remaining >= count - 1 - k) {
+        remaining -= count - 1 - k
+        k += 1
+      }
+      const firstIdx = k
+      const secondIdx = k + 1 + remaining
       await enabledCards.nth(firstIdx).click()
       await page.waitForTimeout(300)
       const stillEnabled = page.locator(cardSelector)
       const count2 = await stillEnabled.count()
       if (count2 < 2) break
-      await stillEnabled.nth(secondIdx % count2).click()
+      const secondClickIdx = count2 < count ? (secondIdx > firstIdx ? secondIdx - 1 : secondIdx) : secondIdx
+      await stillEnabled.nth(secondClickIdx).click()
       await page.waitForTimeout(800)
       const winVisible = await page.getByRole('heading', { name: /goed gedaan/i }).isVisible().catch(() => false)
       if (winVisible) break
