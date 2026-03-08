@@ -1,9 +1,9 @@
 .wrapper {
   position: fixed;
   inset: 0;
-  pointer-events: none;
   z-index: 10;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .canvas {
@@ -24,6 +24,11 @@
   align-items: flex-end;
   gap: 2%;
   padding: 0 5%;
+  pointer-events: auto;
+}
+
+.balloons > * {
+  pointer-events: auto;
 }
 
 .balloon {
@@ -34,6 +39,10 @@
   animation: float 3s ease-in-out infinite;
   animation-delay: calc(var(--i) * -0.4s);
   box-shadow: inset -8px -8px 12px rgba(0, 0, 0, 0.15);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
 }
 
 .balloon::after {
@@ -49,7 +58,27 @@
   border-top: 14px solid hsl(var(--hue), 70%, 50%);
 }
 
+.balloon:hover {
+  filter: brightness(1.1);
+}
+
+.balloon:active {
+  transform: scale(0.95);
+}
+
+.balloonPopped {
+  animation: pop 0.35s ease-out forwards;
+  pointer-events: none;
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-15px) scale(1.02); }
+}
+
+@keyframes pop {
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
 }

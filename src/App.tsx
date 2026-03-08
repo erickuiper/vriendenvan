@@ -43,7 +43,7 @@ export function App() {
   }
 
   return (
-    <div {...rootAttrs} className={styles.screen}>
+    <div {...rootAttrs} className={`${styles.screen} ${styles.screenGame}`}>
       <div className={styles.gameHeader}>
         <button
           type="button"
@@ -61,6 +61,7 @@ export function App() {
       <MemoryBoard
         cards={state.cards}
         showMismatch={showMismatch}
+        selectedCardIds={state.flippedCardIds}
         onCardClick={flipCard}
       />
     </div>

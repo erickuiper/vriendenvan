@@ -15,7 +15,7 @@ test.describe('Vriendjes van Getallen', () => {
     await page.getByRole('button', { name: '4' }).click()
     await expect(page.getByText(/getal: 4/i)).toBeVisible()
     await expect(page.getByText(/zoek de combinaties die samen \d+ maken/i)).toBeVisible()
-    const cards = page.getByRole('button', { name: /gesloten kaart|kaart \d+/i })
+    const cards = page.getByRole('button', { name: /^Kaart \d+$/ })
     await expect(cards.first()).toBeVisible()
     const count = await cards.count()
     expect(count).toBeGreaterThanOrEqual(5)
@@ -27,15 +27,21 @@ test.describe('Vriendjes van Getallen', () => {
     await page.getByRole('button', { name: '3' }).click()
     await expect(page.getByText(/zoek de combinaties die samen \d+ maken/i)).toBeVisible()
 
-    for (let round = 0; round < 25; round++) {
-      const closed = page.getByRole('button', { name: /gesloten kaart/i })
-      const count = await closed.count()
+    const cardSelector = 'button[aria-label^="Kaart "]:not([disabled])'
+    for (let round = 0; round < 50; round++) {
+      const enabledCards = page.locator(cardSelector)
+      const count = await enabledCards.count()
       if (count < 2) break
-      await closed.nth(0).click()
-      await page.waitForTimeout(250)
-      const stillClosed = page.getByRole('button', { name: /gesloten kaart/i })
-      await stillClosed.nth(0).click()
-      await page.waitForTimeout(1200)
+      const firstIdx = round % count
+      let secondIdx = (round + 1) % count
+      if (secondIdx === firstIdx) secondIdx = (secondIdx + 1) % count
+      await enabledCards.nth(firstIdx).click()
+      await page.waitForTimeout(200)
+      const stillEnabled = page.locator(cardSelector)
+      const count2 = await stillEnabled.count()
+      if (count2 < 2) break
+      await stillEnabled.nth(secondIdx % count2).click()
+      await page.waitForTimeout(600)
       const winVisible = await page.getByRole('heading', { name: /goed gedaan/i }).isVisible().catch(() => false)
       if (winVisible) break
     }

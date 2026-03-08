@@ -13,23 +13,23 @@ describe('App', () => {
     }
   })
 
-  it('na kiezen getal verschijnt memorybord', async () => {
+  it('na kiezen getal verschijnt memorybord met open kaarten', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByRole('button', { name: /getal 4 kiezen/i }))
     expect(screen.getByText(/zoek de combinaties die samen \d+ maken/i)).toBeInTheDocument()
     expect(screen.getByText(/getal: 4/i)).toBeInTheDocument()
-    const cards = screen.getAllByRole('button', { name: /kaart|gesloten kaart/i })
+    const cards = screen.getAllByRole('button', { name: /^Kaart \d+$/ })
     expect(cards.length).toBeGreaterThanOrEqual(5)
   })
 
-  it('klikken op kaart opent kaart', async () => {
+  it('klikken op kaart selecteert kaart', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByRole('button', { name: /getal 3 kiezen/i }))
-    const closed = screen.getAllByRole('button', { name: 'Gesloten kaart' })
-    await user.click(closed[0])
-    expect(screen.getByRole('button', { name: /^Kaart \d+$/ })).toBeInTheDocument()
+    const card0 = screen.getByRole('button', { name: 'Kaart 0' })
+    await user.click(card0)
+    expect(card0).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('terugknop gaat naar start', async () => {
