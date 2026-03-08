@@ -73,5 +73,6 @@ describe('createInitialState', () => {
     expect(state.cards).toEqual([])
     expect(state.flippedCardIds).toEqual([])
     expect(state.moves).toBe(0)
+    expect(state.mistakes).toBe(0)
   })
 })

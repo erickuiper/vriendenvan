@@ -25,6 +25,15 @@ describe('App', () => {
     expect(cards.length).toBeGreaterThanOrEqual(5)
   })
 
+  it('toont foutjesteller tijdens spel (Foutjes: 0)', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: /getal 3 kiezen/i }))
+    })
+    expect(screen.getByText(/foutjes: 0/i)).toBeInTheDocument()
+  })
+
   it('klikken op kaart selecteert kaart', async () => {
     const user = userEvent.setup()
     render(<App />)

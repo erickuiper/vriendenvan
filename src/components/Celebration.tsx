@@ -1,15 +1,42 @@
 import { useEffect, useRef, useState } from 'react'
+import type { RewardTier } from '../types'
+import { getCelebrationLevel } from '../logic/rewardTier'
 import styles from './Celebration.module.css'
 
-const BALLOON_COUNT = 8
+const MAX_BALLOON_COUNT = 8
+const MAX_CONFETTI_COUNT = 120
 
-export function Celebration() {
+function getBalloonCount(level: number): number {
+  if (level <= 0) return 0
+  if (level <= 1) return 2
+  if (level <= 2) return 4
+  if (level <= 3) return 6
+  return MAX_BALLOON_COUNT
+}
+
+function getConfettiCount(level: number): number {
+  if (level <= 0) return 0
+  if (level <= 1) return 20
+  if (level <= 2) return 50
+  if (level <= 3) return 90
+  return MAX_CONFETTI_COUNT
+}
+
+interface CelebrationProps {
+  /** Reward tier; determines intensity of balloons and confetti. */
+  tier?: RewardTier
+}
+
+export function Celebration({ tier = 'perfect' }: CelebrationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [popped, setPopped] = useState<Set<number>>(new Set())
+  const level = getCelebrationLevel(tier)
+  const balloonCount = getBalloonCount(level)
+  const confettiCount = getConfettiCount(level)
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas || confettiCount <= 0) return
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
@@ -33,7 +60,7 @@ export function Celebration() {
       dr: number
     }> = []
 
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < confettiCount; i++) {
       confetti.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
@@ -71,7 +98,7 @@ export function Celebration() {
       window.removeEventListener('resize', resize)
       cancelAnimationFrame(animationId)
     }
-  }, [])
+  }, [confettiCount])
 
   const handlePop = (i: number) => {
     if (popped.has(i)) return
@@ -80,9 +107,10 @@ export function Celebration() {
 
   return (
     <div className={styles.wrapper} aria-hidden="true">
-      <canvas ref={canvasRef} className={styles.canvas} />
+      {confettiCount > 0 && <canvas ref={canvasRef} className={styles.canvas} />}
+      {balloonCount > 0 && (
       <div className={styles.balloons}>
-        {[...Array(BALLOON_COUNT)].map((_, i) => (
+        {[...Array(balloonCount)].map((_, i) => (
           <button
             key={i}
             type="button"
@@ -96,6 +124,7 @@ export function Celebration() {
           />
         ))}
       </div>
+      )}
     </div>
   )
 }
