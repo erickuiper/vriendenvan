@@ -25,9 +25,9 @@ export function App() {
 
   if (state.status === 'won') {
     return (
-      <div {...rootAttrs}>
+      <div {...rootAttrs} className={styles.wonWrapper}>
         <Celebration />
-        <div className={styles.screen}>
+        <div className={`${styles.screen} ${styles.wonContent}`}>
           <Header title="Goed gedaan!" />
           <div className={styles.winActions}>
             <button type="button" className={styles.primaryButton} onClick={playAgain}>
@@ -43,7 +43,7 @@ export function App() {
   }
 
   return (
-    <div {...rootAttrs} className={styles.screen}>
+    <div {...rootAttrs} className={`${styles.screen} ${styles.screenGame}`}>
       <div className={styles.gameHeader}>
         <button
           type="button"
@@ -61,6 +61,7 @@ export function App() {
       <MemoryBoard
         cards={state.cards}
         showMismatch={showMismatch}
+        selectedCardIds={state.flippedCardIds}
         onCardClick={flipCard}
       />
     </div>

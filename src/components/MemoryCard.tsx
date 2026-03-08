@@ -5,22 +5,22 @@ interface MemoryCardProps {
   card: CardType
   onClick: () => void
   showMismatch?: boolean
+  isSelected?: boolean
 }
 
-export function MemoryCard({ card, onClick, showMismatch }: MemoryCardProps) {
-  const isRevealed = card.isFlipped || card.isMatched
-  const isWrong = showMismatch && card.isFlipped && !card.isMatched
+export function MemoryCard({ card, onClick, showMismatch, isSelected }: MemoryCardProps) {
+  const isWrong = showMismatch && isSelected && !card.isMatched
 
   return (
     <button
       type="button"
-      className={`${styles.card} ${isRevealed ? styles.revealed : ''} ${isWrong ? styles.wrong : ''} ${card.isMatched ? styles.matched : ''}`}
+      className={`${styles.card} ${styles.revealed} ${isSelected ? styles.selected : ''} ${isWrong ? styles.wrong : ''} ${card.isMatched ? styles.matched : ''}`}
       onClick={onClick}
       disabled={card.isMatched}
-      aria-label={isRevealed ? `Kaart ${card.value}` : 'Gesloten kaart'}
-      aria-pressed={isRevealed}
+      aria-label={`Kaart ${card.value}`}
+      aria-pressed={isSelected}
     >
-      <span className={styles.face} aria-hidden>{isRevealed ? card.value : '★'}</span>
+      <span className={styles.face} aria-hidden>{card.value}</span>
     </button>
   )
 }

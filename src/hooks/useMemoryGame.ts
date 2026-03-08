@@ -7,12 +7,12 @@ import {
   areAllMatchesFound,
 } from '../logic/memory'
 
-const FLIP_BACK_DELAY_MS = 800
+const WRONG_FEEDBACK_MS = 600
 
 export function useMemoryGame() {
   const [state, setState] = useState<GameState>(createInitialState())
   const [showMismatch, setShowMismatch] = useState(false)
-  const [isFlippingLocked, setIsFlippingLocked] = useState(false)
+  const [isLocked, setIsLocked] = useState(false)
 
   const chooseNumber = useCallback((target: number) => {
     const cards = createCardsForTarget(target)
@@ -24,38 +24,45 @@ export function useMemoryGame() {
       status: 'playing',
     })
     setShowMismatch(false)
-    setIsFlippingLocked(false)
+    setIsLocked(false)
   }, [])
 
   const flipCard = useCallback(
     (cardId: string) => {
-      if (isFlippingLocked) return
+      if (isLocked) return
       const card = state.cards.find((c) => c.id === cardId)
-      if (!card || card.isMatched || card.isFlipped) return
-      if (state.flippedCardIds.length >= 2) return
+      if (!card || card.isMatched) return
       if (state.targetNumber == null) return
 
-      const newFlipped = [...state.flippedCardIds, cardId]
+      const selected = state.flippedCardIds
+      const isSelected = selected.includes(cardId)
+
+      if (isSelected) {
+        setState((prev) => ({
+          ...prev,
+          flippedCardIds: prev.flippedCardIds.filter((id) => id !== cardId),
+        }))
+        return
+      }
+
+      if (selected.length >= 2) return
+
+      const newSelected = [...selected, cardId]
       setState((prev) => ({
         ...prev,
-        flippedCardIds: newFlipped,
-        cards: prev.cards.map((c) =>
-          c.id === cardId ? { ...c, isFlipped: true } : c
-        ),
+        flippedCardIds: newSelected,
       }))
 
-      if (newFlipped.length === 2) {
+      if (newSelected.length === 2) {
         const match = doCardsMatch(
           state.cards,
-          newFlipped[0],
-          newFlipped[1],
+          newSelected[0],
+          newSelected[1],
           state.targetNumber
         )
         if (match) {
           const nextCards = state.cards.map((c) =>
-            c.id === newFlipped[0] || c.id === newFlipped[1]
-              ? { ...c, isFlipped: true, isMatched: true }
-              : c
+            newSelected.includes(c.id) ? { ...c, isFlipped: true, isMatched: true } : c
           )
           const won = areAllMatchesFound(nextCards)
           setState((prev) => ({
@@ -67,28 +74,25 @@ export function useMemoryGame() {
           }))
         } else {
           setShowMismatch(true)
-          setIsFlippingLocked(true)
+          setIsLocked(true)
           setTimeout(() => {
             setState((prev) => ({
               ...prev,
               flippedCardIds: [],
-              cards: prev.cards.map((c) =>
-                newFlipped.includes(c.id) ? { ...c, isFlipped: false } : c
-              ),
             }))
             setShowMismatch(false)
-            setIsFlippingLocked(false)
-          }, FLIP_BACK_DELAY_MS)
+            setIsLocked(false)
+          }, WRONG_FEEDBACK_MS)
         }
       }
     },
-    [state.cards, state.flippedCardIds, state.targetNumber, isFlippingLocked]
+    [state.cards, state.flippedCardIds, state.targetNumber, isLocked]
   )
 
   const goToStart = useCallback(() => {
     setState(createInitialState())
     setShowMismatch(false)
-    setIsFlippingLocked(false)
+    setIsLocked(false)
   }, [])
 
   const playAgain = useCallback(() => {

@@ -1,12 +1,10 @@
 .card {
   aspect-ratio: 1;
-  min-width: 88px;
-  min-height: 88px;
-  max-width: 120px;
-  max-height: 120px;
+  min-width: 0;
+  min-height: 0;
   font-weight: 800;
   color: var(--color-text);
-  background: var(--card-back);
+  background: var(--color-surface);
   border-radius: 20px;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.08);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -17,8 +15,9 @@
   position: relative;
 }
 
-.card:not(.revealed):not(.matched) {
-  border-color: var(--card-back-border);
+.card.selected:not(.matched) {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 0 rgba(37, 99, 235, 0.3), 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .card:hover:not(:disabled):not(.matched) {
@@ -33,12 +32,12 @@
 
 .card.revealed {
   background: var(--color-surface);
-  border-color: var(--color-primary);
-  box-shadow: 0 4px 0 rgba(37, 99, 235, 0.2), 0 6px 20px rgba(0, 0, 0, 0.08);
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08), 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
 .card.revealed .face {
-  font-size: 3rem;
+  font-size: clamp(1.5rem, 4vw, 3rem);
   line-height: 1;
   color: var(--color-primary);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -53,7 +52,7 @@
 
 .card.matched .face {
   color: #166534;
-  font-size: 3rem;
+  font-size: clamp(1.5rem, 4vw, 3rem);
 }
 
 .card.wrong {
@@ -73,12 +72,6 @@
   transition: font-size 0.2s, color 0.2s;
 }
 
-/* Closed card: friendly star on warm background */
-.card:not(.revealed):not(.matched) .face {
-  font-size: 2.25rem;
-  color: #b45309;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-}
 
 @keyframes wiggle {
   0%, 100% { transform: rotate(0deg); }
@@ -88,20 +81,11 @@
   80% { transform: rotate(4deg); }
 }
 
-/* Tablet / touch: larger cards and numbers */
 [data-tablet-ui="true"] .card {
-  min-width: 100px;
-  min-height: 100px;
-  max-width: 140px;
-  max-height: 140px;
   border-radius: 24px;
 }
 
 [data-tablet-ui="true"] .card.revealed .face,
 [data-tablet-ui="true"] .card.matched .face {
-  font-size: 3.5rem;
-}
-
-[data-tablet-ui="true"] .card:not(.revealed):not(.matched) .face {
-  font-size: 2.75rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
 }

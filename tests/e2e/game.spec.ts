@@ -15,34 +15,50 @@ test.describe('Vriendjes van Getallen', () => {
     await page.getByRole('button', { name: '4' }).click()
     await expect(page.getByText(/getal: 4/i)).toBeVisible()
     await expect(page.getByText(/zoek de combinaties die samen \d+ maken/i)).toBeVisible()
-    const cards = page.getByRole('button', { name: /gesloten kaart|kaart \d+/i })
+    const cards = page.getByRole('button', { name: /^Kaart \d+$/ })
     await expect(cards.first()).toBeVisible()
     const count = await cards.count()
     expect(count).toBeGreaterThanOrEqual(5)
   })
 
   test('volledige flow: alle matches vinden en winstscherm', async ({ page }) => {
-    test.setTimeout(60000)
+    test.setTimeout(90000)
     await page.goto('/')
     await page.getByRole('button', { name: '3' }).click()
     await expect(page.getByText(/zoek de combinaties die samen \d+ maken/i)).toBeVisible()
 
-    for (let round = 0; round < 25; round++) {
-      const closed = page.getByRole('button', { name: /gesloten kaart/i })
-      const count = await closed.count()
+    const cardSelector = 'button[aria-label^="Kaart "]:not([disabled])'
+    for (let round = 0; round < 50; round++) {
+      const enabledCards = page.locator(cardSelector)
+      const count = await enabledCards.count()
       if (count < 2) break
-      await closed.nth(0).click()
-      await page.waitForTimeout(250)
-      const stillClosed = page.getByRole('button', { name: /gesloten kaart/i })
-      await stillClosed.nth(0).click()
-      await page.waitForTimeout(1200)
+      const pairCount = (count * (count - 1)) / 2
+      const pairIndex = round % pairCount
+      let k = 0
+      let remaining = pairIndex
+      while (remaining >= count - 1 - k) {
+        remaining -= count - 1 - k
+        k += 1
+      }
+      const firstIdx = k
+      const secondIdx = k + 1 + remaining
+      await enabledCards.nth(firstIdx).click()
+      await page.waitForTimeout(300)
+      const stillEnabled = page.locator(cardSelector)
+      const count2 = await stillEnabled.count()
+      if (count2 < 2) break
+      const secondClickIdx = count2 < count ? (secondIdx > firstIdx ? secondIdx - 1 : secondIdx) : secondIdx
+      await stillEnabled.nth(secondClickIdx).click()
+      await page.waitForTimeout(800)
       const winVisible = await page.getByRole('heading', { name: /goed gedaan/i }).isVisible().catch(() => false)
       if (winVisible) break
     }
 
-    await expect(page.getByRole('heading', { name: /goed gedaan/i })).toBeVisible({ timeout: 10000 })
-    await expect(page.getByRole('button', { name: /nog een keer/i })).toBeVisible()
-    await expect(page.getByRole('button', { name: /kies een ander getal/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /goed gedaan/i })).toBeVisible({ timeout: 15000 })
+    const nogEenKeer = page.getByRole('button', { name: /nog een keer/i })
+    await expect(nogEenKeer).toBeVisible({ timeout: 5000 })
+    await expect(nogEenKeer).toBeEnabled({ timeout: 5000 })
+    await expect(page.getByRole('button', { name: /kies een ander getal/i })).toBeVisible({ timeout: 5000 })
   })
 
   test('knop "Kies een ander getal" gaat terug naar start', async ({ page }) => {

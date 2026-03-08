@@ -1,8 +1,11 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styles from './Celebration.module.css'
+
+const BALLOON_COUNT = 8
 
 export function Celebration() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [popped, setPopped] = useState<Set<number>>(new Set())
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -70,18 +73,26 @@ export function Celebration() {
     }
   }, [])
 
+  const handlePop = (i: number) => {
+    if (popped.has(i)) return
+    setPopped((prev) => new Set(prev).add(i))
+  }
+
   return (
     <div className={styles.wrapper} aria-hidden="true">
       <canvas ref={canvasRef} className={styles.canvas} />
       <div className={styles.balloons}>
-        {[...Array(8)].map((_, i) => (
-          <div
+        {[...Array(BALLOON_COUNT)].map((_, i) => (
+          <button
             key={i}
-            className={styles.balloon}
+            type="button"
+            className={`${styles.balloon} ${popped.has(i) ? styles.balloonPopped : ''}`}
             style={{
               '--i': i,
               '--hue': (i * 45 + 200) % 360,
             } as React.CSSProperties}
+            onClick={() => handlePop(i)}
+            aria-label="Ballon kapot maken"
           />
         ))}
       </div>
