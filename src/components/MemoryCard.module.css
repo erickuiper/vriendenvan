@@ -52,7 +52,7 @@
 
 .card.matched .face {
   color: #166534;
-  font-size: 3rem;
+  font-size: clamp(1.5rem, 4vw, 3rem);
 }
 
 .card.wrong {
