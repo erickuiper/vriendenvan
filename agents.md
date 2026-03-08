@@ -267,7 +267,7 @@ Elementen:
 - componentinteracties testen;
 - een end-to-end test toevoegen die de hoofdflow valideert;
 - zorgen dat de app lokaal start en in Chrome werkt;
-- **vóór elke commit alle tests draaien** (`npm run test`, en indien van toepassing `npm run test:e2e`) en pas committen als alle tests groen zijn; nooit committen met falende tests.
+- **vóór elke commit alle tests draaien** (unit, component én e2e): `npm run test:all` of eerst `npm run test` dan `npm run test:e2e`; pas committen als alle tests groen zijn; nooit committen met falende tests.
 
 ### De agent mag aannemen
 - taal van de interface is Nederlands;
@@ -345,10 +345,11 @@ De agent moet testcommando’s opleveren zoals:
 npm install
 npm run test
 npm run test:e2e
+npm run test:all
 npm run dev
 ```
 
-**Voor elke commit:** eerst `npm run test` (en zo nodig `npm run test:e2e`) uitvoeren; alleen committen als alle tests slagen.
+**Voor elke commit:** alle tests draaien (unit, component én e2e), bijv. met `npm run test:all`; alleen committen als alle tests slagen.
 
 ---
 
