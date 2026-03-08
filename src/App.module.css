@@ -46,6 +46,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
@@ -73,6 +75,16 @@
   color: var(--color-text);
 }
 
+.mistakesBadge {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+[data-tablet-ui="true"] .mistakesBadge {
+  font-size: 1.125rem;
+}
+
 .hint {
   margin: 0 0 1rem;
   font-size: 1rem;
@@ -87,6 +99,33 @@
 
 [data-tablet-ui="true"] .targetBadge {
   font-size: 1.25rem;
+}
+
+.mistakesResult {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.face {
+  font-size: 3rem;
+  line-height: 1;
+  margin: 0.5rem 0;
+}
+
+.perfectBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-top: 0.5rem;
+}
+
+.perfectStar {
+  font-size: 1.75rem;
 }
 
 .winActions {

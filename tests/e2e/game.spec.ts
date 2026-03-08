@@ -54,7 +54,12 @@ test.describe('Vriendjes van Getallen', () => {
       if (winVisible) break
     }
 
-    await expect(page.getByRole('heading', { name: /goed gedaan/i })).toBeVisible({ timeout: 15000 })
+    await expect(
+      page.getByRole('heading', {
+        name: /goed gedaan|wauw|knap gedaan|super gedaan|goed geprobeerd/i,
+      })
+    ).toBeVisible({ timeout: 15000 })
+    await expect(page.getByText(/foutjes gemaakt: \d+/i)).toBeVisible({ timeout: 5000 })
     const nogEenKeer = page.getByRole('button', { name: /nog een keer/i })
     await expect(nogEenKeer).toBeVisible({ timeout: 5000 })
     await expect(nogEenKeer).toBeEnabled({ timeout: 5000 })

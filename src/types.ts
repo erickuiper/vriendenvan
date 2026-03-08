@@ -5,10 +5,18 @@ export interface Card {
   isMatched: boolean
 }
 
+export type RewardTier =
+  | 'needs-encouragement'
+  | 'ok'
+  | 'good'
+  | 'great'
+  | 'perfect'
+
 export interface GameState {
   targetNumber: number | null
   cards: Card[]
   flippedCardIds: string[]
   moves: number
+  mistakes: number
   status: 'start' | 'playing' | 'won'
 }

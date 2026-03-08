@@ -50,6 +50,7 @@ export function createInitialState(): GameState {
     cards: [],
     flippedCardIds: [],
     moves: 0,
+    mistakes: 0,
     status: 'start',
   }
 }

@@ -21,6 +21,7 @@ export function useMemoryGame() {
       cards,
       flippedCardIds: [],
       moves: 0,
+      mistakes: 0,
       status: 'playing',
     })
     setShowMismatch(false)
@@ -73,6 +74,10 @@ export function useMemoryGame() {
             status: won ? 'won' : prev.status,
           }))
         } else {
+          setState((prev) => ({
+            ...prev,
+            mistakes: prev.mistakes + 1,
+          }))
           setShowMismatch(true)
           setIsLocked(true)
           setTimeout(() => {

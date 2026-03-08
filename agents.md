@@ -90,6 +90,8 @@ Regels:
 
 ### 4. Gameplay
 - De speler klikt twee kaarten open.
+- **Foutjesteller**: tijdens het spel wordt altijd het aantal fouten getoond (bijv. *Foutjes: 0*). Visueel zacht en niet bestraffend.
+- **Fout**: een beurt waar de speler twee kaarten omdraait en de som van de twee waarden *niet* gelijk is aan het doelgetal. Bij een fout wordt de teller met 1 verhoogd.
 - Bij een juiste match:
   - positieve feedback tonen;
   - kaarten gematcht markeren;
@@ -98,13 +100,18 @@ Regels:
   - korte foutfeedback tonen;
   - kaarten na een korte vertraging weer sluiten.
 
-### 5. Einde van het spel
+### 5. Einde van het spel (graded reward)
 Wanneer alle matches gevonden zijn:
-- toon een felicitatiebericht in eenvoudig Nederlands;
-- toon ballonnen;
-- toon confetti-animatie;
-- bied een knop om opnieuw te spelen;
-- bied een knop om terug te gaan naar de getalkeuze.
+- **Altijd tonen**: het totaal aantal gemaakte fouten (*Foutjes gemaakt: X*).
+- **Beloningsniveaus** (gebaseerd op aantal fouten):
+  - **>5 fouten**: licht teleurgesteld gezicht, ondersteunende boodschap, minimale viering, aanmoediging om opnieuw te proberen.
+  - **4–5 fouten**: neutraal gezicht, kleine positieve feedback, beperkte viering.
+  - **2–3 fouten**: licht blij gezicht, ballonnen, positieve boodschap.
+  - **1 fout**: blij gezicht, meer ballonnen, lichte confetti, sterke positieve boodschap.
+  - **0 fouten (perfecte ronde)**: groot blij gezicht, volle ballonnen en confetti, extra badge/ster (*Perfecte ronde*), boodschap zoals *Wauw, 0 foutjes!* of *Perfect gespeeld!*.
+- Viering (ballonnen, confetti) schaalt met het beloningsniveau; 0 fouten krijgt de sterkste viering.
+- Knop **Nog een keer** en knop **Kies een ander getal**.
+- **UX**: nooit straffen voor fouten; normale winst blijft succesvol; perfecte ronde voelt als bonus, geen vereiste.
 
 ---
 
@@ -164,11 +171,16 @@ Wanneer alle matches gevonden zijn:
    - flip-status beheren
    - matchcontrole uitvoeren
    - winconditie bepalen
+   - fouten tellen per ronde
 
-5. **Celebration layer**
-   - confetti en ballonnen tonen bij winst
+5. **Reward tier logic** (`logic/rewardTier.ts`)
+   - `getRewardTier(mistakes)` voor beloningsniveau
+   - teksten en vieringsniveau per tier
 
-6. **Test suite**
+6. **Celebration layer**
+   - confetti en ballonnen; intensiteit afhankelijk van reward tier
+
+7. **Test suite**
    - logica testen
    - componentgedrag testen
    - end-to-end user flow testen
@@ -190,14 +202,23 @@ interface Card {
 
 ### GameState
 ```ts
+type RewardTier =
+  | 'needs-encouragement'  // >5 fouten
+  | 'ok'                   // 4–5 fouten
+  | 'good'                 // 2–3 fouten
+  | 'great'                // 1 fout
+  | 'perfect';             // 0 fouten
+
 interface GameState {
   targetNumber: number | null;
   cards: Card[];
   flippedCardIds: string[];
   moves: number;
+  mistakes: number;   // aantal foute paren deze ronde
   status: 'start' | 'playing' | 'won';
 }
 ```
+De `rewardTier` wordt afgeleid uit `mistakes` bij status `'won'` (pure functie `getRewardTier(mistakes)`).
 
 ---
 
@@ -226,16 +247,18 @@ Elementen:
 Elementen:
 - terugknop
 - zichtbaar gekozen getal
+- **Foutjes: X** (foutjesteller, kindvriendelijk)
 - memory grid
 - eenvoudige statusregel, bijvoorbeeld: **Zoek de combinaties die samen [getal] maken!**
 
-### Scherm 3: Gewonnen
+### Scherm 3: Gewonnen (graded reward)
 Elementen:
-- tekst, bijvoorbeeld: **Goed gedaan!**
-- confetti
-- ballonnen
-- knop **Nog een keer**
-- knop **Kies een ander getal**
+- **Foutjes gemaakt: X** (altijd zichtbaar)
+- Gezicht/emoji en titel/tekst afhankelijk van beloningsniveau (0 t/m >5 fouten)
+- Bij 0 fouten: extra **Perfecte ronde**-badge/ster
+- Confetti en ballonnen: intensiteit afhankelijk van tier (0 fouten = maximaal)
+- Knop **Nog een keer**
+- Knop **Kies een ander getal**
 
 ---
 
@@ -321,7 +344,9 @@ Test minimaal:
 1. genereren van kaartwaarden (één getal per kaart) voor een gekozen getal;
 2. matchdetectie: twee kaarten matchen als hun som het doelgetal is;
 3. correcte afhandeling van dubbele waarden (bijv. twee kaarten met 2 voor doelgetal 4);
-4. winconditie als alle kaarten gematcht zijn.
+4. winconditie als alle kaarten gematcht zijn;
+5. **Foutentracking**: `mistakes` start op 0; neemt toe na een fout paar; neemt niet toe bij een juiste match;
+6. **Reward tier**: `getRewardTier(mistakes)` geeft de juiste tier voor 0, 1, 2–3, 4–5, >5.
 
 ### Component tests
 Test minimaal:
@@ -329,7 +354,8 @@ Test minimaal:
 2. kiezen van een getal start het spel;
 3. kaarten worden weergegeven;
 4. juiste match blijft open;
-5. foute match sluit weer.
+5. foute match sluit weer;
+6. foutjesteller wordt getoond tijdens spel (bijv. *Foutjes: 0*).
 
 ### End-to-end tests
 Gebruik Playwright en valideer minimaal:
@@ -337,7 +363,8 @@ Gebruik Playwright en valideer minimaal:
 2. gebruiker kiest een getal;
 3. memorybord verschijnt;
 4. alle matches kunnen worden gevonden;
-5. winstscherm met felicitatie en visueel feestje verschijnt.
+5. winstscherm met felicitatie en visueel feestje verschijnt;
+6. op winstscherm: *Foutjes gemaakt: X* is zichtbaar; koptekst past bij beloningsniveau.
 
 ### Testuitvoer
 De agent moet testcommando’s opleveren zoals:
@@ -361,8 +388,9 @@ De oplossing is geslaagd wanneer:
 4. het memoryspel correct werkt;
 5. `a-b` en `b-a` als dezelfde match tellen;
 6. het spel eindigt zodra alle matches gevonden zijn;
-7. de speler dan ballonnen en confetti ziet;
-8. automatische tests aanwezig zijn en slagen.
+7. tijdens het spel het aantal fouten zichtbaar is (*Foutjes: X*);
+8. op het winstscherm het totaal aantal gemaakte fouten wordt getoond en de viering (ballonnen, confetti) en tekst/gezicht schalen met het aantal fouten (0 fouten = sterkste beloning);
+9. automatische tests aanwezig zijn en slagen.
 
 ---
 

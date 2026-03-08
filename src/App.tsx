@@ -4,6 +4,7 @@ import { Header } from './components/Header'
 import { NumberPicker } from './components/NumberPicker'
 import { MemoryBoard } from './components/MemoryBoard'
 import { Celebration } from './components/Celebration'
+import { getRewardTier, getRewardCopy } from './logic/rewardTier'
 import styles from './App.module.css'
 
 export function App() {
@@ -24,11 +25,25 @@ export function App() {
   }
 
   if (state.status === 'won') {
+    const tier = getRewardTier(state.mistakes)
+    const copy = getRewardCopy(tier)
     return (
       <div {...rootAttrs} className={styles.wonWrapper}>
-        <Celebration />
+        <Celebration tier={tier} />
         <div className={`${styles.screen} ${styles.wonContent}`}>
-          <Header title="Goed gedaan!" />
+          <p className={styles.mistakesResult} aria-live="polite">
+            Foutjes gemaakt: {state.mistakes}
+          </p>
+          <span className={styles.face} role="img" aria-label={copy.title}>
+            {copy.face}
+          </span>
+          <Header title={copy.title} subtitle={copy.subtitle} />
+          {tier === 'perfect' && (
+            <div className={styles.perfectBadge} aria-hidden="true">
+              <span className={styles.perfectStar} aria-hidden="true">⭐</span>
+              <span>Perfecte ronde</span>
+            </div>
+          )}
           <div className={styles.winActions}>
             <button type="button" className={styles.primaryButton} onClick={playAgain}>
               Nog een keer
@@ -55,6 +70,9 @@ export function App() {
         </button>
         <span className={styles.targetBadge} aria-live="polite">
           Getal: {state.targetNumber}
+        </span>
+        <span className={styles.mistakesBadge} aria-live="polite">
+          Foutjes: {state.mistakes}
         </span>
       </div>
       <p className={styles.hint}>Zoek de combinaties die samen {state.targetNumber} maken!</p>
