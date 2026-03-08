@@ -266,7 +266,8 @@ Elementen:
 - alle kernlogica voorzien van unit tests;
 - componentinteracties testen;
 - een end-to-end test toevoegen die de hoofdflow valideert;
-- zorgen dat de app lokaal start en in Chrome werkt.
+- zorgen dat de app lokaal start en in Chrome werkt;
+- **vóór elke commit alle tests draaien** (`npm run test`, en indien van toepassing `npm run test:e2e`) en pas committen als alle tests groen zijn; nooit committen met falende tests.
 
 ### De agent mag aannemen
 - taal van de interface is Nederlands;
@@ -346,6 +347,8 @@ npm run test
 npm run test:e2e
 npm run dev
 ```
+
+**Voor elke commit:** eerst `npm run test` (en zo nodig `npm run test:e2e`) uitvoeren; alleen committen als alle tests slagen.
 
 ---
 
