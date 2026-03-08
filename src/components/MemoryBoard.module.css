@@ -1,0 +1,13 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 120px));
+  gap: 1rem;
+  justify-content: center;
+  max-width: 560px;
+}
+
+[data-tablet-ui="true"] .grid {
+  gap: 1.25rem;
+  max-width: 720px;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 140px));
+}

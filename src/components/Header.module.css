@@ -1,0 +1,28 @@
+.header {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+[data-tablet-ui="true"] .title {
+  font-size: 2rem;
+}
+
+[data-tablet-ui="true"] .subtitle {
+  font-size: 1.125rem;
+  margin-top: 0.75rem;
+}

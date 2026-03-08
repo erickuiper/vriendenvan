@@ -1,0 +1,39 @@
+.section {
+  margin: 1.5rem 0;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  max-width: 420px;
+}
+
+.numberButton {
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  background: var(--color-primary);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, background 0.15s;
+}
+
+[data-tablet-ui="true"] .numberButton {
+  width: 5rem;
+  height: 5rem;
+  font-size: 2.25rem;
+  border-radius: 20px;
+}
+
+.numberButton:hover {
+  background: var(--color-primary-hover);
+  transform: scale(1.05);
+}
+
+.numberButton:active {
+  transform: scale(0.98);
+}
