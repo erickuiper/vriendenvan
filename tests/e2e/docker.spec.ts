@@ -55,11 +55,19 @@ test.describe('Vriendjes van Getallen (Docker)', () => {
       const secondClickIdx = count2 < count ? (secondIdx > firstIdx ? secondIdx - 1 : secondIdx) : secondIdx
       await stillEnabled.nth(secondClickIdx).click()
       await page.waitForTimeout(800)
-      const winVisible = await page.getByRole('heading', { name: /goed gedaan/i }).isVisible().catch(() => false)
+      const winVisible = await page
+        .getByRole('heading', { name: /goed gedaan|wauw|knap gedaan|super gedaan|goed geprobeerd/i })
+        .isVisible()
+        .catch(() => false)
       if (winVisible) break
     }
 
-    await expect(page.getByRole('heading', { name: /goed gedaan/i })).toBeVisible({ timeout: 15000 })
+    await expect(
+      page.getByRole('heading', {
+        name: /goed gedaan|wauw|knap gedaan|super gedaan|goed geprobeerd/i,
+      })
+    ).toBeVisible({ timeout: 15000 })
+    await expect(page.getByText(/foutjes gemaakt: \d+/i)).toBeVisible({ timeout: 5000 })
     const nogEenKeer = page.getByRole('button', { name: /nog een keer/i })
     await expect(nogEenKeer).toBeVisible({ timeout: 5000 })
     await expect(nogEenKeer).toBeEnabled({ timeout: 5000 })
